@@ -11,3 +11,4 @@ background = pygame.image.load('assets/bg.jpg')
 game = Game(screen, background)
 
 game.main()
+

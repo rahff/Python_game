@@ -1,5 +1,6 @@
 import pygame
 from projectil import Projectil
+import time
 
 class Player(pygame.sprite.Sprite):
     def __init__(self) -> None:
@@ -14,6 +15,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.y = 530
         self.all_projectils = pygame.sprite.Group()
         self.blocked = False
+        self.hand_state = 1
 
     def move_right(self, limit: int):
         if self.blocked == False:
@@ -25,4 +27,14 @@ class Player(pygame.sprite.Sprite):
             self.rect.x -= self.velocity
         
     def launch_projectil(self):
+        self.hand_state = 15
         self.all_projectils.add(Projectil(self))
+    
+    def put_the_hand_up(self):
+        if(self.hand_state < 15):
+            self.hand_state += 1
+        self.image = pygame.image.load(f"assets/player/player{self.hand_state}.png")
+
+    def put_the_hand_down(self):
+        self.hand_state = 1
+        self.image = pygame.image.load(f"assets/player/player{self.hand_state}.png")

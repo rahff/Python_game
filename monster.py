@@ -1,5 +1,7 @@
 import pygame
 from pygame import image
+import random
+
 
 class Monster(pygame.sprite.Sprite):
     def __init__(self) -> None:
@@ -9,7 +11,7 @@ class Monster(pygame.sprite.Sprite):
         self.attack = 5
         self.image = pygame.image.load('assets/mummy.png')
         self.rect = self.image.get_rect()
-        self.rect.x = 1080 - self.rect.width
+        self.rect.x = random.randint(200, 1080) - self.rect.width
         self.rect.y = 540
         self.blocked = False
     

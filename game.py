@@ -1,4 +1,4 @@
-from time import time
+
 import pygame
 from pygame import sprite
 from pygame.sprite import Group, Sprite, collide_rect
@@ -19,22 +19,25 @@ class Game(pygame.sprite.Sprite):
         self.pressed = {}
         self.spawn_monster()
         self.heart_beat = 1
+        self.level = 1
 
     def main(self) -> None:
         while self.running:
             self.draw_sprite()
-            pygame.display.flip()
             self.dispatch_event()
             self.listen_event()
             self.check_monster_collision(self.all_monster)
             self.heart_beat += 1
+            pygame.display.flip()
 
     def dispatch_event(self) -> None:
         if self.pressed.get(pygame.K_RIGHT):
             self.player.move_right(self.screen.get_width())
         elif self.pressed.get(pygame.K_LEFT):
             self.player.move_left()
-
+        elif self.pressed.get(pygame.K_SPACE):
+            self.player.put_the_hand_up()
+        
     def listen_event(self) -> None:
          for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -46,6 +49,8 @@ class Game(pygame.sprite.Sprite):
                     self.player.launch_projectil()
             elif event.type == pygame.KEYUP:
                 self.pressed[event.key] = False
+                if event.key == pygame.K_SPACE:
+                    self.player.put_the_hand_down()
 
     def draw_sprite(self) -> None:
         self.screen.blit(self.background, (0,-200))
@@ -78,7 +83,7 @@ class Game(pygame.sprite.Sprite):
     def check_monster_collision(self, monsters: Group):
         for monster in monsters:
             if pygame.sprite.collide_rect(monster, self.player):
-                self.player.blocked = True
+                self.onCollisionPlayer()
                 monster.blocked = True
                 if self.heart_beat % 10 == 0:
                     monster.mummy_attack()
@@ -89,7 +94,7 @@ class Game(pygame.sprite.Sprite):
                     monster.blocked = True
                     monster.health -= 34
                     if monster.health < 0:
-                        self.all_monster.remove(monster)
+                        self.destroy_monster(monster)
                     time.sleep(0.1)
                     self.player.all_projectils.remove(current_sprite)
 
@@ -97,5 +102,14 @@ class Game(pygame.sprite.Sprite):
                 self.player.blocked = False
                 monster.blocked = False
 
+    def onCollisionPlayer(self):
+        self.player.blocked = True
+        self.player.healf -= 20
+        if self.player.rect.x < 0:
+            self.player.rect.x -=20
+        if(self.player.healf <= 0):
+            self.player.remove()
+
     def destroy_monster(self, monster) -> None:
         self.all_monster.remove(monster)
+        self.spawn_monster()
